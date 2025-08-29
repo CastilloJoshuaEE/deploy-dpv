@@ -7,12 +7,13 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Conexión a la base de datos - corrige la URI
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/test', {
+// Conexión a la base de datos
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => console.log("Conectado a MongoDB!"))
-  .catch((err) => console.error("Error al conectar a MongoDB:", err));
+})
+.then(() => console.log("Conectado a MongoDB!"))
+.catch((err) => console.error("Error al conectar a MongoDB:", err));
 
 // Importar el modelo
 const Todo = require('./models/Todo');
@@ -76,9 +77,10 @@ app.delete("/api/todos/:id", async (req, res) => {
 
 // Servir archivos estáticos de React en producción
 if (process.env.NODE_ENV === 'production') {
+  // Sirve archivos estáticos del build de React
   app.use(express.static(path.join(__dirname, 'client/build')));
   
-  // Esta ruta debe ir DESPUÉS de todas las rutas de API
+  // Maneja todas las demás rutas devolviendo el index.html
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
